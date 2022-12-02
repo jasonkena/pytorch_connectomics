@@ -7,6 +7,8 @@ import time
 import math
 import GPUtil
 import numpy as np
+import tempfile
+import h5py
 from yacs.config import CfgNode
 
 import torch
@@ -209,9 +211,15 @@ class Trainer(TrainerBase):
 
         output_size = [tuple(np.ceil(np.array(x) * np.array(output_scale)).astype(int))
                        for x in self.dataloader._dataset.volume_size]
-        result = [np.stack([np.zeros(x, dtype=np.float32)
-                            for _ in range(channel_size)]) for x in output_size]
-        weight = [np.zeros(x, dtype=np.float32) for x in output_size]
+
+        # temporary h5 file to store intermediate results
+        # NOTE: may need to close file explicitly
+        tf = h5py.File(tempfile.TemporaryFile(), 'w')
+        for i, x in output_size:
+            tf.create_dataset('result_%d' % i, data=np.stack([np.zeros(x, dtype=np.float32)
+                            for _ in range(channel_size)]))
+            tf.create_dataset('weight_%d' % i, data=np.zeros(x, dtype=np.float32))
+
         print("Total number of batches: ", len(self.dataloader))
 
         start = time.perf_counter()
@@ -232,23 +240,29 @@ class Trainer(TrainerBase):
                     st = (np.array(st) *
                           np.array([1]+output_scale)).astype(int).tolist()
                     out_block = output[idx]
-                    if result[st[0]].ndim - out_block.ndim == 1:  # 2d model
+                    result = tf['result_%d' % st[0]]
+                    weight = tf['weight_%d' % st[0]]
+
+                    if result.ndim - out_block.ndim == 1:  # 2d model
                         out_block = out_block[:, np.newaxis, :]
 
-                    result[st[0]][:, st[1]:st[1]+sz[1], st[2]:st[2]+sz[2],
+                    result[:, st[1]:st[1]+sz[1], st[2]:st[2]+sz[2],
                                   st[3]:st[3]+sz[3]] += out_block * ww[np.newaxis, :]
-                    weight[st[0]][st[1]:st[1]+sz[1], st[2]:st[2]+sz[2],
+                    weight[st[1]:st[1]+sz[1], st[2]:st[2]+sz[2],
                                   st[3]:st[3]+sz[3]] += ww
 
         end = time.perf_counter()
         print("Prediction time: %.2fs" % (end-start))
 
-        for vol_id in range(len(result)):
-            if result[vol_id].ndim > weight[vol_id].ndim:
-                weight[vol_id] = np.expand_dims(weight[vol_id], axis=0)
-            result[vol_id] /= weight[vol_id]  # in-place to save memory
-            result[vol_id] *= 255
-            result[vol_id] = result[vol_id].astype(np.uint8)
+        for vol_id in range(len(output_size)):
+            result = tf['result_%d' % vol_id][:]
+            weight = tf['weight_%d' % vol_id][:]
+
+            if result.ndim > weight.ndim:
+                weight = np.expand_dims(weight, axis=0)
+            result /= weight  # in-place to save memory
+            result *= 255
+            result = result.astype(np.uint8)
 
             if self.cfg.INFERENCE.UNPAD:
                 pad_size = (np.array(self.cfg.DATASET.PAD_SIZE) *
@@ -260,16 +274,18 @@ class Trainer(TrainerBase):
                     pad_size = (np.array(self.cfg.DATASET.DATA_SCALE) *
                                 np.array(pad_size)).astype(int).tolist()
                 pad_size = get_padsize(pad_size)
-                result[vol_id] = array_unpad(result[vol_id], pad_size)
+                result = array_unpad(result, pad_size)
+            tf.create_dataset('final_%d' % vol_id, data=result)
 
+        final_results = [tf['final_%d' % i] for i in range(len(output_size))]
         if self.output_dir is None:
-            return result
+            return [x[:] for x in final_results]
         else:
             print('Final prediction shapes are:')
-            for k in range(len(result)):
-                print(result[k].shape)
+            for x in final_results:
+                print(x.shape)
             save_path = os.path.join(self.output_dir, self.test_filename)
-            writeh5(save_path, result, ['vol%d' % (x) for x in range(len(result))])
+            writeh5(save_path, final_results, ['vol%d' % (i) for i in range(len(final_results))])
             print('Prediction saved as: ', save_path)
 
     def test_singly(self):
