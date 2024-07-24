@@ -11,9 +11,9 @@ def main():
     cfg = load_cfg(args)
     device = init_devices(args, cfg)
 
-    if args.local_rank == 0 or args.local_rank is None:
+    if args.rank == 0 or args.rank is None:
         # In distributed training, only print and save the configurations 
-        # using the node with local_rank=0.
+        # using the node with (global) rank=0.
         print("PyTorch: ", torch.__version__)
         print(cfg)
 
@@ -25,7 +25,7 @@ def main():
     # start training or inference
     mode = 'test' if args.inference else 'train'
     trainer = Trainer(cfg, device, mode,
-                      rank=args.local_rank,
+                      rank=args.rank, local_rank=args.local_rank,
                       checkpoint=args.checkpoint)
 
     # Start training or inference:

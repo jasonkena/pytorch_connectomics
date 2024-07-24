@@ -19,7 +19,7 @@ MODEL_MAP = {
 }
 
 
-def build_model(cfg, device, rank=None):
+def build_model(cfg, device, local_rank=None):
 
     model_arch = cfg.MODEL.ARCHITECTURE
     assert model_arch in MODEL_MAP.keys()
@@ -79,10 +79,10 @@ def build_model(cfg, device, rank=None):
     model = MODEL_MAP[cfg.MODEL.ARCHITECTURE](**kwargs)
     
     print('model: ', model.__class__.__name__)
-    return make_parallel(model, cfg, device, rank)
+    return make_parallel(model, cfg, device, local_rank)
 
 
-def make_parallel(model, cfg, device, rank=None, find_unused_parameters=False):
+def make_parallel(model, cfg, device, local_rank=None, find_unused_parameters=False):
     if cfg.SYSTEM.PARALLEL == 'DDP':
         print('Parallelism with DistributedDataParallel.')
         # Currently SyncBatchNorm only supports DistributedDataParallel (DDP)
@@ -95,9 +95,9 @@ def make_parallel(model, cfg, device, rank=None, find_unused_parameters=False):
         # For multiprocessing distributed, DistributedDataParallel constructor
         # should always set the single device scope, otherwise,
         # DistributedDataParallel will use all available devices.
-        assert rank is not None
+        assert local_rank is not None
         model = nn.parallel.DistributedDataParallel(
-            model, device_ids=[rank], output_device=rank, find_unused_parameters=find_unused_parameters)
+            model, device_ids=[local_rank], output_device=local_rank, find_unused_parameters=find_unused_parameters)
 
     elif cfg.SYSTEM.PARALLEL == 'DP':
         gpu_device_ids = list(range(cfg.SYSTEM.NUM_GPUS))

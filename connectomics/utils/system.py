@@ -85,8 +85,9 @@ def init_devices(args, cfg):
     else:
         manual_seed = 0 if args.manual_seed is None else args.manual_seed
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        args.rank = args.local_rank
 
-    print("rank: {}, device: {}, seed: {}".format(args.local_rank, device, manual_seed))
+    print("local_rank: {}, device: {}, seed: {}".format(args.local_rank, device, manual_seed))
     # use manual_seed seeds for reproducibility
     init_seed(manual_seed)
     cudnn.enabled = True

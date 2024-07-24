@@ -30,7 +30,8 @@ class Trainer(TrainerBase):
         cfg (yacs.config.CfgNode): YACS configuration options.
         device (torch.device): model running device. GPUs are recommended for model training and inference.
         mode (str): running mode of the trainer (``'train'`` or ``'test'``). Default: ``'train'``
-        rank (int, optional): node rank for distributed training. Default: `None`
+        rank (int, optional): global node rank for distributed training. Default: `None`
+        local_rank (int, optional): per-node rank for distributed training. Default: `None`
         checkpoint (str, optional): the checkpoint file to be loaded. Default: `None`
     """
 
@@ -39,10 +40,12 @@ class Trainer(TrainerBase):
                  device: torch.device,
                  mode: str = 'train',
                  rank: Optional[int] = None,
+                 local_rank: Optional[int] = None,
                  checkpoint: Optional[str] = None):
+        # used to set self.is_main_process based on global rank
         self.init_basics(cfg, device, mode, rank)
 
-        self.model = build_model(self.cfg, self.device, rank)
+        self.model = build_model(self.cfg, self.device, local_rank)
         if self.mode == 'train':
             self.optimizer = build_optimizer(self.cfg, self.model)
             self.lr_scheduler = build_lr_scheduler(self.cfg, self.optimizer)
