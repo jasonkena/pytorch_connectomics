@@ -6,6 +6,7 @@ from PIL import ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 import os
+import zarr
 import h5py
 import math
 import glob
@@ -39,6 +40,9 @@ def readh5(filename, dataset=None):
         dataset = list(fid)[0]
     return np.array(fid[dataset])
 
+def readzarr(filename):
+    data = zarr.open(filename, mode='r')
+    return np.array(data)
 
 def readvol(filename: str, dataset: Optional[str]=None, drop_channel: bool=False):
     r"""Load volumetric data in HDF5, TIFF or PNG formats.
@@ -56,6 +60,17 @@ def readvol(filename: str, dataset: Optional[str]=None, drop_channel: bool=False
         if data.ndim == 4:
             # convert (z,y,x,c) to (c,z,y,x) order
             data = data.transpose(3,0,1,2)
+    elif 'zarr' in img_suf:
+        data = readzarr(filename)
+        print("NOTE: flipping xyz to zyx")
+        if data.ndim == 4:
+            # convert (x,y,z,c) to (c,z,y,x) order
+            data = data.transpose(3,2,1,0)
+        else:
+            assert data.ndim == 3
+            # convert (x,y,z) to (z,y,x) order
+            data = data.transpose(2,1,0)
+        breakpoint()
     else:
         raise ValueError('unrecognizable file format for %s' % (filename))
 

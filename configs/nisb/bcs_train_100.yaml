@@ -1,0 +1,314 @@
+SYSTEM:
+  NUM_GPUS: 1
+  NUM_CPUS: 16
+MODEL:
+  ARCHITECTURE: unet_3d
+  BLOCK_TYPE: residual_se
+  INPUT_SIZE:
+  - 33
+  - 97
+  - 97
+  OUTPUT_SIZE:
+  - 33
+  - 97
+  - 97
+  NORM_MODE: gn
+  IN_PLANES: 1
+  MIXED_PRECESION: false
+  FILTERS:
+  - 32
+  - 64
+  - 96
+  - 128
+  - 160
+  LABEL_EROSION: 1
+  OUT_PLANES: 3
+  TARGET_OPT:
+  - '0'
+  - 4-0-1
+  - a-0-20-9-9
+  LOSS_OPTION:
+  - - WeightedBCEWithLogitsLoss
+    - DiceLoss
+  - - WeightedBCEWithLogitsLoss
+    - DiceLoss
+  - - WeightedMSE
+  LOSS_WEIGHT:
+  - - 1.0
+    - 0.5
+  - - 1.0
+    - 0.5
+  - - 4.0
+  WEIGHT_OPT:
+  - - '1'
+    - '0'
+  - - '1'
+    - '0'
+  - - '0'
+  OUTPUT_ACT:
+  - - none
+    - sigmoid
+  - - none
+    - sigmoid
+  - - tanh
+DATASET:
+  INPUT_PATH: /projects/weilab/dataset/nisb/train_100
+  OUTPUT_PATH: outputs/bcs_train_100
+  IMAGE_NAME:
+  - train/seed0/data.zarr/img
+  - train/seed1/data.zarr/img
+  - train/seed10/data.zarr/img
+  - train/seed11/data.zarr/img
+  - train/seed12/data.zarr/img
+  - train/seed13/data.zarr/img
+  - train/seed14/data.zarr/img
+  - train/seed15/data.zarr/img
+  - train/seed16/data.zarr/img
+  - train/seed17/data.zarr/img
+  - train/seed18/data.zarr/img
+  - train/seed19/data.zarr/img
+  - train/seed2/data.zarr/img
+  - train/seed20/data.zarr/img
+  - train/seed21/data.zarr/img
+  - train/seed22/data.zarr/img
+  - train/seed23/data.zarr/img
+  - train/seed24/data.zarr/img
+  - train/seed25/data.zarr/img
+  - train/seed26/data.zarr/img
+  - train/seed27/data.zarr/img
+  - train/seed28/data.zarr/img
+  - train/seed29/data.zarr/img
+  - train/seed3/data.zarr/img
+  - train/seed30/data.zarr/img
+  - train/seed31/data.zarr/img
+  - train/seed32/data.zarr/img
+  - train/seed33/data.zarr/img
+  - train/seed34/data.zarr/img
+  - train/seed35/data.zarr/img
+  - train/seed36/data.zarr/img
+  - train/seed37/data.zarr/img
+  - train/seed38/data.zarr/img
+  - train/seed39/data.zarr/img
+  - train/seed4/data.zarr/img
+  - train/seed40/data.zarr/img
+  - train/seed41/data.zarr/img
+  - train/seed42/data.zarr/img
+  - train/seed43/data.zarr/img
+  - train/seed44/data.zarr/img
+  - train/seed45/data.zarr/img
+  - train/seed46/data.zarr/img
+  - train/seed47/data.zarr/img
+  - train/seed48/data.zarr/img
+  - train/seed49/data.zarr/img
+  - train/seed5/data.zarr/img
+  - train/seed50/data.zarr/img
+  - train/seed51/data.zarr/img
+  - train/seed52/data.zarr/img
+  - train/seed53/data.zarr/img
+  - train/seed54/data.zarr/img
+  - train/seed55/data.zarr/img
+  - train/seed56/data.zarr/img
+  - train/seed57/data.zarr/img
+  - train/seed58/data.zarr/img
+  - train/seed59/data.zarr/img
+  - train/seed6/data.zarr/img
+  - train/seed60/data.zarr/img
+  - train/seed61/data.zarr/img
+  - train/seed62/data.zarr/img
+  - train/seed63/data.zarr/img
+  - train/seed64/data.zarr/img
+  - train/seed65/data.zarr/img
+  - train/seed66/data.zarr/img
+  - train/seed67/data.zarr/img
+  - train/seed68/data.zarr/img
+  - train/seed69/data.zarr/img
+  - train/seed7/data.zarr/img
+  - train/seed70/data.zarr/img
+  - train/seed71/data.zarr/img
+  - train/seed72/data.zarr/img
+  - train/seed73/data.zarr/img
+  - train/seed74/data.zarr/img
+  - train/seed75/data.zarr/img
+  - train/seed76/data.zarr/img
+  - train/seed77/data.zarr/img
+  - train/seed78/data.zarr/img
+  - train/seed79/data.zarr/img
+  - train/seed8/data.zarr/img
+  - train/seed80/data.zarr/img
+  - train/seed81/data.zarr/img
+  - train/seed82/data.zarr/img
+  - train/seed83/data.zarr/img
+  - train/seed84/data.zarr/img
+  - train/seed85/data.zarr/img
+  - train/seed86/data.zarr/img
+  - train/seed87/data.zarr/img
+  - train/seed88/data.zarr/img
+  - train/seed89/data.zarr/img
+  - train/seed9/data.zarr/img
+  - train/seed90/data.zarr/img
+  - train/seed91/data.zarr/img
+  - train/seed92/data.zarr/img
+  - train/seed93/data.zarr/img
+  - train/seed94/data.zarr/img
+  - train/seed95/data.zarr/img
+  - train/seed96/data.zarr/img
+  - train/seed97/data.zarr/img
+  - train/seed98/data.zarr/img
+  - train/seed99/data.zarr/img
+  LABEL_NAME:
+  - train/seed0/data.zarr/seg
+  - train/seed1/data.zarr/seg
+  - train/seed10/data.zarr/seg
+  - train/seed11/data.zarr/seg
+  - train/seed12/data.zarr/seg
+  - train/seed13/data.zarr/seg
+  - train/seed14/data.zarr/seg
+  - train/seed15/data.zarr/seg
+  - train/seed16/data.zarr/seg
+  - train/seed17/data.zarr/seg
+  - train/seed18/data.zarr/seg
+  - train/seed19/data.zarr/seg
+  - train/seed2/data.zarr/seg
+  - train/seed20/data.zarr/seg
+  - train/seed21/data.zarr/seg
+  - train/seed22/data.zarr/seg
+  - train/seed23/data.zarr/seg
+  - train/seed24/data.zarr/seg
+  - train/seed25/data.zarr/seg
+  - train/seed26/data.zarr/seg
+  - train/seed27/data.zarr/seg
+  - train/seed28/data.zarr/seg
+  - train/seed29/data.zarr/seg
+  - train/seed3/data.zarr/seg
+  - train/seed30/data.zarr/seg
+  - train/seed31/data.zarr/seg
+  - train/seed32/data.zarr/seg
+  - train/seed33/data.zarr/seg
+  - train/seed34/data.zarr/seg
+  - train/seed35/data.zarr/seg
+  - train/seed36/data.zarr/seg
+  - train/seed37/data.zarr/seg
+  - train/seed38/data.zarr/seg
+  - train/seed39/data.zarr/seg
+  - train/seed4/data.zarr/seg
+  - train/seed40/data.zarr/seg
+  - train/seed41/data.zarr/seg
+  - train/seed42/data.zarr/seg
+  - train/seed43/data.zarr/seg
+  - train/seed44/data.zarr/seg
+  - train/seed45/data.zarr/seg
+  - train/seed46/data.zarr/seg
+  - train/seed47/data.zarr/seg
+  - train/seed48/data.zarr/seg
+  - train/seed49/data.zarr/seg
+  - train/seed5/data.zarr/seg
+  - train/seed50/data.zarr/seg
+  - train/seed51/data.zarr/seg
+  - train/seed52/data.zarr/seg
+  - train/seed53/data.zarr/seg
+  - train/seed54/data.zarr/seg
+  - train/seed55/data.zarr/seg
+  - train/seed56/data.zarr/seg
+  - train/seed57/data.zarr/seg
+  - train/seed58/data.zarr/seg
+  - train/seed59/data.zarr/seg
+  - train/seed6/data.zarr/seg
+  - train/seed60/data.zarr/seg
+  - train/seed61/data.zarr/seg
+  - train/seed62/data.zarr/seg
+  - train/seed63/data.zarr/seg
+  - train/seed64/data.zarr/seg
+  - train/seed65/data.zarr/seg
+  - train/seed66/data.zarr/seg
+  - train/seed67/data.zarr/seg
+  - train/seed68/data.zarr/seg
+  - train/seed69/data.zarr/seg
+  - train/seed7/data.zarr/seg
+  - train/seed70/data.zarr/seg
+  - train/seed71/data.zarr/seg
+  - train/seed72/data.zarr/seg
+  - train/seed73/data.zarr/seg
+  - train/seed74/data.zarr/seg
+  - train/seed75/data.zarr/seg
+  - train/seed76/data.zarr/seg
+  - train/seed77/data.zarr/seg
+  - train/seed78/data.zarr/seg
+  - train/seed79/data.zarr/seg
+  - train/seed8/data.zarr/seg
+  - train/seed80/data.zarr/seg
+  - train/seed81/data.zarr/seg
+  - train/seed82/data.zarr/seg
+  - train/seed83/data.zarr/seg
+  - train/seed84/data.zarr/seg
+  - train/seed85/data.zarr/seg
+  - train/seed86/data.zarr/seg
+  - train/seed87/data.zarr/seg
+  - train/seed88/data.zarr/seg
+  - train/seed89/data.zarr/seg
+  - train/seed9/data.zarr/seg
+  - train/seed90/data.zarr/seg
+  - train/seed91/data.zarr/seg
+  - train/seed92/data.zarr/seg
+  - train/seed93/data.zarr/seg
+  - train/seed94/data.zarr/seg
+  - train/seed95/data.zarr/seg
+  - train/seed96/data.zarr/seg
+  - train/seed97/data.zarr/seg
+  - train/seed98/data.zarr/seg
+  - train/seed99/data.zarr/seg
+  VAL_IMAGE_NAME:
+  - val/seed100/data.zarr/img
+  VAL_LABEL_NAME:
+  - val/seed100/data.zarr/seg
+  PAD_SIZE:
+  - 16
+  - 32
+  - 32
+  DATA_SCALE:
+  - 1.0
+  - 1.0
+  - 1.0
+  REJECT_SAMPLING:
+    SIZE_THRES: 1000
+    P: 1.0
+  DISTRIBUTED: true
+SOLVER:
+  LR_SCHEDULER_NAME: WarmupCosineLR
+  BASE_LR: 0.02
+  ITERATION_STEP: 1
+  ITERATION_SAVE: 5000
+  ITERATION_TOTAL: 100000
+  SAMPLES_PER_BATCH: 2
+MONITOR:
+  ITERATION_NUM:
+  - 40
+  - 400
+INFERENCE:
+  INPUT_SIZE:
+  - 33
+  - 257
+  - 257
+  OUTPUT_SIZE:
+  - 33
+  - 257
+  - 257
+  INPUT_PATH: /projects/weilab/dataset/nisb/train_100
+  IMAGE_NAME:
+  - val/seed100/data.zarr/img
+  OUTPUT_PATH: outputs/bcs_train_100
+  OUTPUT_NAME: val/results.h5
+  PAD_SIZE:
+  - 16
+  - 32
+  - 32
+  AUG_MODE: mean
+  AUG_NUM: None
+  STRIDE:
+  - 26
+  - 128
+  - 128
+  SAMPLES_PER_BATCH: 4
+  OUTPUT_ACT:
+  - sigmoid
+  - sigmoid
+  - tanh

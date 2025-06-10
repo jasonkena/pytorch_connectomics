@@ -1,0 +1,118 @@
+SYSTEM:
+  NUM_GPUS: 1
+  NUM_CPUS: 16
+MODEL:
+  ARCHITECTURE: unet_3d
+  BLOCK_TYPE: residual_se
+  INPUT_SIZE:
+  - 33
+  - 97
+  - 97
+  OUTPUT_SIZE:
+  - 33
+  - 97
+  - 97
+  NORM_MODE: gn
+  IN_PLANES: 1
+  MIXED_PRECESION: false
+  FILTERS:
+  - 32
+  - 64
+  - 96
+  - 128
+  - 160
+  LABEL_EROSION: 1
+  OUT_PLANES: 2
+  TARGET_OPT:
+  - '0'
+  - 4-0-1
+  LOSS_OPTION:
+  - - WeightedBCEWithLogitsLoss
+    - DiceLoss
+  - - WeightedBCEWithLogitsLoss
+    - DiceLoss
+  LOSS_WEIGHT:
+  - - 1.0
+    - 0.5
+  - - 1.0
+    - 0.5
+  WEIGHT_OPT:
+  - - '1'
+    - '0'
+  - - '1'
+    - '0'
+  OUTPUT_ACT:
+  - - none
+    - sigmoid
+  - - none
+    - sigmoid
+DATASET:
+  INPUT_PATH: /projects/weilab/dataset/nisb/multichannel
+  OUTPUT_PATH: outputs/bc_multichannel
+  IMAGE_NAME:
+  - train/seed150/data.zarr/img
+  - train/seed151/data.zarr/img
+  - train/seed152/data.zarr/img
+  - train/seed153/data.zarr/img
+  - train/seed154/data.zarr/img
+  LABEL_NAME:
+  - train/seed150/data.zarr/seg
+  - train/seed151/data.zarr/seg
+  - train/seed152/data.zarr/seg
+  - train/seed153/data.zarr/seg
+  - train/seed154/data.zarr/seg
+  VAL_IMAGE_NAME:
+  - val/seed155/data.zarr/img
+  VAL_LABEL_NAME:
+  - val/seed155/data.zarr/seg
+  PAD_SIZE:
+  - 16
+  - 32
+  - 32
+  DATA_SCALE:
+  - 1.0
+  - 1.0
+  - 1.0
+  REJECT_SAMPLING:
+    SIZE_THRES: 1000
+    P: 1.0
+  DISTRIBUTED: true
+SOLVER:
+  LR_SCHEDULER_NAME: WarmupCosineLR
+  BASE_LR: 0.02
+  ITERATION_STEP: 1
+  ITERATION_SAVE: 5000
+  ITERATION_TOTAL: 100000
+  SAMPLES_PER_BATCH: 2
+MONITOR:
+  ITERATION_NUM:
+  - 40
+  - 400
+INFERENCE:
+  INPUT_SIZE:
+  - 33
+  - 257
+  - 257
+  OUTPUT_SIZE:
+  - 33
+  - 257
+  - 257
+  INPUT_PATH: /projects/weilab/dataset/nisb/multichannel
+  IMAGE_NAME:
+  - val/seed155/data.zarr/img
+  OUTPUT_PATH: outputs/bc_multichannel
+  OUTPUT_NAME: val/results.h5
+  PAD_SIZE:
+  - 16
+  - 32
+  - 32
+  AUG_MODE: mean
+  AUG_NUM: None
+  STRIDE:
+  - 26
+  - 128
+  - 128
+  SAMPLES_PER_BATCH: 4
+  OUTPUT_ACT:
+  - sigmoid
+  - sigmoid
