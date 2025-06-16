@@ -144,6 +144,7 @@ def read_pkl(filename):
     return data
 
 def writeh5(filename, dtarray, dataset='main'):
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
     fid = h5py.File(filename, 'w')
     if isinstance(dataset, (list,)):
         for i, dd in enumerate(dataset):
