@@ -62,15 +62,13 @@ def readvol(filename: str, dataset: Optional[str]=None, drop_channel: bool=False
             data = data.transpose(3,0,1,2)
     elif 'zarr' in img_suf:
         data = readzarr(filename)
-        print("NOTE: flipping xyz to zyx")
+        # originally (x,y,z,c), output (z,y,x)
         if data.ndim == 4:
-            # convert (x,y,z,c) to (c,z,y,x) order
-            data = data.transpose(3,2,1,0)
-        else:
-            assert data.ndim == 3
-            # convert (x,y,z) to (z,y,x) order
-            data = data.transpose(2,1,0)
-        breakpoint()
+            print("NOTE: stripping channel dimension")
+            data = data.squeeze(axis=-1)
+        assert data.ndim == 3
+        print("NOTE: flipping xyz to zyx")
+        data = data.transpose(2,1,0)
     else:
         raise ValueError('unrecognizable file format for %s' % (filename))
 

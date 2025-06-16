@@ -1,6 +1,6 @@
 SYSTEM:
   NUM_GPUS: 1
-  NUM_CPUS: 16
+  NUM_CPUS: 8
 MODEL:
   ARCHITECTURE: unet_3d
   BLOCK_TYPE: residual_se
@@ -66,10 +66,6 @@ DATASET:
   - train/seed104/data.zarr/seg
   - train/seed105/data.zarr/seg
   - train/seed106/data.zarr/seg
-  VAL_IMAGE_NAME:
-  - val/seed107/data.zarr/img
-  VAL_LABEL_NAME:
-  - val/seed107/data.zarr/seg
   PAD_SIZE:
   - 16
   - 32
@@ -88,7 +84,7 @@ SOLVER:
   ITERATION_STEP: 1
   ITERATION_SAVE: 5000
   ITERATION_TOTAL: 100000
-  SAMPLES_PER_BATCH: 2
+  SAMPLES_PER_BATCH: 8
 MONITOR:
   ITERATION_NUM:
   - 40
@@ -117,7 +113,7 @@ INFERENCE:
   - 26
   - 128
   - 128
-  SAMPLES_PER_BATCH: 4
+  SAMPLES_PER_BATCH: 8
   OUTPUT_ACT:
   - sigmoid
   - sigmoid
